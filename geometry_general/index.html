@@ -60,6 +60,18 @@
       const torus = new THREE.Mesh( torusGeometry, material );
       scene.add( torus );
 
+      sphere.position.x = 200
+      sphere.position.y = 200
+      cube.position.x = 300
+      cube.position.y = 0
+      plane.position.x = 200
+      plane.position.y = -200
+      cone.position.x = -200
+      cone.position.y = 200
+      cylinder.position.x = -300
+      cylinder.position.y = 0
+      torus.position.x = -200
+      torus.position.y = -200
 
       tick();
 
@@ -68,8 +80,8 @@
         sphere.rotation.y += 0.01;
         cube.rotation.y += 0.01;
         plane.rotation.y += 0.01;
-        cone.rotation.y += 0.01;
-        cylinder.rotation.y += 0.01;
+        cone.rotation.x += 0.01;
+        cylinder.rotation.x += 0.01;
         torus.rotation.y += 0.01;
         renderer.render(scene, camera); // レンダリング
 

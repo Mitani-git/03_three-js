@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
+  <script>
+    // ページの読み込みを待つ
+    window.addEventListener('load', init);
+
+    function init() {
+
+      // サイズを指定
+      const width = 960;
+      const height = 540;
+
+      // レンダラーを作成
+      const renderer = new THREE.WebGLRenderer({
+        canvas: document.querySelector('#myCanvas')
+      });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+
+      // シーンを作成
+      const scene = new THREE.Scene();
+
+      // カメラを作成
+      const camera = new THREE.PerspectiveCamera(45, width / height);
+      camera.position.set(0, 0, +1000);
+      
+      //　共通のマテリアル設定
+      const material = new THREE.MeshBasicMaterial( {color: 0xFF0000, side: THREE.DoubleSide} );
+
+      // 球体
+      const sphereGeometry = new THREE.SphereGeometry( 100, 10, 10 );
+      const sphere = new THREE.Mesh( sphereGeometry, material );
+      scene.add( sphere );
+
+      // 直方体
+      const boxGeometry = new THREE.BoxGeometry( 200, 150, 300 );
+      const cube = new THREE.Mesh( boxGeometry, material );
+      scene.add( cube );
+
+      // 平面
+      const planeGeometry = new THREE.PlaneGeometry( 300, 300, 32 );
+      const plane = new THREE.Mesh( planeGeometry, material );
+      scene.add( plane );
+
+      // 三角錐
+      const coneGeometry = new THREE.ConeGeometry( 100, 300, 32 );
+      const cone = new THREE.Mesh( coneGeometry, material );
+      scene.add( cone );
+
+      // 円柱
+      const cylinderGeometry = new THREE.CylinderGeometry( 150, 100, 200, 32 );
+      const cylinder = new THREE.Mesh( cylinderGeometry, material );
+      scene.add( cylinder );
+
+      // ドーナツ型
+      const torusGeometry = new THREE.TorusGeometry( 230, 30, 16, 100 );
+      const torus = new THREE.Mesh( torusGeometry, material );
+      scene.add( torus );
+
+
+      tick();
+
+      // 毎フレーム時に実行されるループイベントです
+      function tick() {
+        sphere.rotation.y += 0.01;
+        cube.rotation.y += 0.01;
+        plane.rotation.y += 0.01;
+        cone.rotation.y += 0.01;
+        cylinder.rotation.y += 0.01;
+        torus.rotation.y += 0.01;
+        renderer.render(scene, camera); // レンダリング
+
+        requestAnimationFrame(tick);
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+</body>
+</html>

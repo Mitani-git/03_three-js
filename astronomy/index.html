@@ -112,7 +112,14 @@
 				// 	mouseX = event.pageX;
 				// });
 
+        let animationFrame;
 				tick();
+        document.getElementById('stopBtn').addEventListener('click', ()=>{
+          cancelAnimationFrame(animationFrame)
+        })
+        document.getElementById('playBtn').addEventListener('click', ()=>{
+          animationFrame = requestAnimationFrame(tick);
+        })
 
 				// 毎フレーム時に実行されるループイベントです
 				function tick() {
@@ -138,12 +145,35 @@
 					// レンダリング
 					renderer.render(scene, camera);
 
-					requestAnimationFrame(tick);
+					animationFrame = requestAnimationFrame(tick);
 				}
       }
   </script>
+  <style>
+    .btn {
+      display: inline-block;
+      height: 30px;
+      width: 60px;
+      text-align: center;
+      margin-left: 30px;
+      cursor: pointer;
+    }
+    .btn:first-child {
+      margin-left: 0;
+    }
+    #stopBtn {
+      background-color: #fcc2c2;
+    }
+    #playBtn {
+      background-color: #97e5e8;
+    }
+  </style>
 </head>
 <body>
   <canvas id="myCanvas"></canvas>
+  <div>
+    <div id="stopBtn" class="btn">停止</div>
+    <div id="playBtn" class="btn">再生</div>
+  </div>
 </body>
 </html>

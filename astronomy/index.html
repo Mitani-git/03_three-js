@@ -128,6 +128,7 @@
         document.getElementById('startMouseBtn').addEventListener('click', ()=>{
           mouseMove = requestAnimationFrame(mouseMoveEvent);
         })
+
         let isTransparent = false
         document.getElementById('opacity').addEventListener('click', ()=>{
           if(!isTransparent) {
@@ -137,6 +138,7 @@
             materialEarth.opacity = 1
             isTransparent = false
           }
+          renderer.render(scene, camera);
         })
 
 				// 毎フレーム時に実行されるループイベントです

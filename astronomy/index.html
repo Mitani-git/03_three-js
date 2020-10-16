@@ -46,6 +46,11 @@
           color: 0xf7f5cd
         });
 
+        // 地点ポイントのマテリアル（ただの単色）を作成
+        const materialPoint = new THREE.MeshToonMaterial({
+          color: 0xfc0303
+        });
+
         // コンテナーを作成
         const container = new THREE.Object3D();
         scene.add(container);
@@ -53,12 +58,22 @@
         // 球体の形状を作成します
         const earthGeometry = new THREE.SphereGeometry(120, 30, 30);
         const moonGeometry = new THREE.SphereGeometry(30, 30, 30);
+
+        // 地点ポイントには円柱を使います
+        const pointGeometry = new THREE.CylinderGeometry(10, 10, 5);
+
         // 形状とマテリアルからメッシュを作成します
         const earthMesh = new THREE.Mesh(earthGeometry, materialEarth);
         const moonMesh = new THREE.Mesh(moonGeometry, materialMoon);
+        const pointMesh = new THREE.Mesh(pointGeometry, materialPoint);
         // コンテナーにメッシュを追加します
           // 地球は回転しないようにコンテナーではなくシーンに直接追加
+        earthMesh.add(pointMesh)
+            // 地球上の地点を示すポイントを追加
+        pointMesh.position.x = 118;
+        pointMesh.rotation.z = Math.PI / 2
         scene.add(earthMesh);
+
         container.add(moonMesh);
 				// 円周上に配置
 				moonMesh.position.x = 400;
@@ -117,8 +132,8 @@
 					// camera.lookAt(new THREE.Vector3(0, 0, 0));
 
           // メッシュを回転させる
-          container.rotation.y += 0.0001;
-          earthMesh.rotation.y += 0.0028;
+          container.rotation.y += 0.001;
+          earthMesh.rotation.y += 0.028;
 
 					// レンダリング
 					renderer.render(scene, camera);

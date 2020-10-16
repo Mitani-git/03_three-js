@@ -38,7 +38,8 @@
         // 地球のマテリアルを作成
         const materialEarth = new THREE.MeshToonMaterial({
           map: new THREE.TextureLoader().load('../imgs/earthmap1k.jpg'),
-          side: THREE.DoubleSide
+          side: THREE.DoubleSide,
+          transparent: true
         });
 
         // 月のマテリアル（ただの単色）を作成
@@ -127,6 +128,16 @@
         document.getElementById('startMouseBtn').addEventListener('click', ()=>{
           mouseMove = requestAnimationFrame(mouseMoveEvent);
         })
+        let isTransparent = false
+        document.getElementById('opacity').addEventListener('click', ()=>{
+          if(!isTransparent) {
+            materialEarth.opacity = 0.7
+            isTransparent = true
+          } else {
+            materialEarth.opacity = 1
+            isTransparent = false
+          }
+        })
 
 				// 毎フレーム時に実行されるループイベントです
 				function tick() {
@@ -166,10 +177,11 @@
     .btn {
       display: inline-block;
       height: 30px;
-      width: 60px;
+      width: 120px;
       text-align: center;
       margin-left: 30px;
       cursor: pointer;
+      border: 1px solid #57695c;
     }
     .btn:first-child {
       margin-left: 0;
@@ -189,6 +201,7 @@
     <div id="playBtn" class="btn">再生</div>
     <div id="startMouseBtn" class="btn">カメラ移動</div>
     <div id="stopMouseBtn" class="btn">カメラ停止</div>
+    <div id="opacity" class="btn">透過切替</div>
   </div>
 </body>
 </html>

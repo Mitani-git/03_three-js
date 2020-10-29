@@ -25,6 +25,10 @@
 
       // シーンを作成
       const scene = new THREE.Scene();
+      scene.background = new THREE.Color( 0xdaed6 );
+      // フォグを設定
+      // new THREE.Fog(色, 開始距離, 終点距離);
+      scene.fog = new THREE.Fog(0x000000, 50, 2000);
 
       // カメラを作成
       const camera = new THREE.PerspectiveCamera(45, width / height);
@@ -32,27 +36,24 @@
 
       // 平行光源
       const directionalLight = new THREE.DirectionalLight(0xffffff);
-      directionalLight.position.set(1, 1, 1);
+      directionalLight.position.set(1, 1, 3);
       scene.add(directionalLight);
 
       // 環境光源
-      const ambientLight = new THREE.AmbientLight(0x333333);
+      const ambientLight = new THREE.AmbientLight(0x333333, 2.0);
       scene.add(ambientLight);
 
 
-      const geometry = new THREE.BoxBufferGeometry(50, 50, 50);
+      const geometry = new THREE.SphereGeometry(40, 32, 32);
       // マウスとの交差を調べたいものは配列に格納する
       const meshList = [];
       for (let i = 0; i < 200; i++) {
-        const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const material = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true });
 
         const mesh = new THREE.Mesh(geometry, material);
         mesh.position.x = (Math.random() - 0.5) * 800;
         mesh.position.y = (Math.random() - 0.5) * 800;
         mesh.position.z = (Math.random() - 0.5) * 800;
-        mesh.rotation.x = Math.random() * 2 * Math.PI;
-        mesh.rotation.y = Math.random() * 2 * Math.PI;
-        mesh.rotation.z = Math.random() * 2 * Math.PI;
         scene.add(mesh);
 
         // 配列に保存
@@ -93,9 +94,11 @@
           if (intersects.length > 0 && mesh === intersects[0].object) {
             // 色を赤くする
             mesh.material.color.setHex(0x4287f5);
+            mesh.material.opacity = 1
           } else {
             // それ以外は元の色にする
             mesh.material.color.setHex(0xffffff);
+            mesh.material.opacity = 0
           }
         });
 

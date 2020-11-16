@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
+  <script>
+      // ページの読み込みを待つ
+      window.addEventListener('load', init);
+
+      function init() {
+        // サイズを指定
+        const width = 960;
+        const height = 540;
+        let rot = 0;
+
+        // レンダラーを作成
+        const renderer = new THREE.WebGLRenderer({
+          canvas: document.querySelector('#myCanvas')
+        });
+        renderer.setSize(width, height);
+
+        // シーンを作成
+        const scene = new THREE.Scene();
+
+        // カメラを作成
+        const camera = new THREE.PerspectiveCamera(45, width / height);
+        // 角度に応じてカメラの位置を設定
+        camera.position.x = 0;
+        camera.position.z = 1000;
+        // 原点方向を見つめる
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+        // 平行光源を作成
+        const directionalLight = new THREE.DirectionalLight(0xffffff);
+        directionalLight.position.set(1, 0, 0);
+        scene.add(directionalLight);
+
+        // 地球のマテリアルを作成
+        const materialEarth = new THREE.MeshToonMaterial({
+          map: new THREE.TextureLoader().load('../imgs/earthmap1k.jpg'),
+          side: THREE.DoubleSide,
+          transparent: true
+        });
+
+        // 月のマテリアル（ただの単色）を作成
+        const materialMoon = new THREE.MeshToonMaterial({
+          color: 0xf7f5cd
+        });
+
+        // 地点ポイントのマテリアル（ただの単色）を作成
+        const materialPoint = new THREE.MeshToonMaterial({
+          color: 0xfc0303
+        });
+
+        // コンテナーを作成
+        const container = new THREE.Object3D();
+        scene.add(container);
+
+        // 球体の形状を作成します
+        const earthGeometry = new THREE.SphereGeometry(120, 30, 30);
+        const moonGeometry = new THREE.SphereGeometry(30, 30, 30);
+
+        // 地点ポイントには円柱を使います
+        const pointGeometry = new THREE.CylinderGeometry(10, 10, 5);
+
+        // 形状とマテリアルからメッシュを作成します
+        const earthMesh = new THREE.Mesh(earthGeometry, materialEarth);
+        const moonMesh = new THREE.Mesh(moonGeometry, materialMoon);
+        const pointMesh = new THREE.Mesh(pointGeometry, materialPoint);
+        // コンテナーにメッシュを追加します
+          // 地球は回転しないようにコンテナーではなくシーンに直接追加
+        earthMesh.add(pointMesh)
+            // 地球上の地点を示すポイントを追加
+        pointMesh.position.x = 118;
+        pointMesh.rotation.z = Math.PI / 2
+        scene.add(earthMesh);
+
+        container.add(moonMesh);
+				// 円周上に配置
+				moonMesh.position.x = 400;
+				moonMesh.position.z = 0;
+
+        // 星屑を作成します (カメラの動きをわかりやすくするため)
+        createStarField();
+
+        function createStarField() {
+          // 形状データを作成
+          const geometry = new THREE.Geometry();
+          for (let i = 0; i < 1000; i++) {
+            geometry.vertices.push(
+              new THREE.Vector3(
+                3000 * (Math.random() - 0.5),
+                3000 * (Math.random() - 0.5),
+                3000 * (Math.random() - 0.5)
+              )
+            );
+          }
+          // マテリアルを作成
+          const material = new THREE.PointsMaterial({
+            size: 10,
+            color: 0xffffff
+          });
+
+          // 物体を作成
+          const mesh = new THREE.Points(geometry, material);
+          scene.add(mesh);
+        }
+
+				let mouseX = 0; // マウス座標
+
+				// マウス座標はマウスが動いた時のみ取得できる
+				document.getElementById("myCanvas").addEventListener("mousemove", (event) => {
+					mouseX = event.pageX;
+				});
+
+        let animationFrame;
+				tick();
+        let mouseMove;
+        document.getElementById('stopBtn').addEventListener('click', ()=>{
+          cancelAnimationFrame(animationFrame)
+        })
+        document.getElementById('playBtn').addEventListener('click', ()=>{
+          animationFrame = requestAnimationFrame(tick);
+        })
+        document.getElementById('stopMouseBtn').addEventListener('click', ()=>{
+          cancelAnimationFrame(mouseMove)
+        })
+        document.getElementById('startMouseBtn').addEventListener('click', ()=>{
+          mouseMove = requestAnimationFrame(mouseMoveEvent);
+        })
+
+        let isTransparent = false
+        document.getElementById('opacity').addEventListener('click', ()=>{
+          if(!isTransparent) {
+            materialEarth.opacity = 0.7
+            isTransparent = true
+          } else {
+            materialEarth.opacity = 1
+            isTransparent = false
+          }
+          renderer.render(scene, camera);
+        })
+
+				// 毎フレーム時に実行されるループイベントです
+				function tick() {
+
+          // メッシュを回転させる
+          container.rotation.y += 0.001;
+          earthMesh.rotation.y += 0.028;
+
+					// レンダリング
+					renderer.render(scene, camera);
+
+					animationFrame = requestAnimationFrame(tick);
+				}
+        function mouseMoveEvent() {
+					// マウスの位置に応じて角度を設定
+					// マウスのX座標がステージの幅の何%の位置にあるか調べてそれを360度で乗算する
+					const targetRot = (mouseX / width) * 360;
+					// イージングの公式を用いて滑らかにする
+					// 値 += (目標値 - 現在の値) * 減速値
+					rot += (targetRot - rot) * 0.02;
+
+					// ラジアンに変換する
+					const radian = rot * Math.PI / 180;
+					// 角度に応じてカメラの位置を設定
+					camera.position.x = 1000 * Math.sin(radian);
+					camera.position.z = 1000 * Math.cos(radian);
+					// 原点方向を見つめる
+					camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+          					// レンダリング
+					renderer.render(scene, camera);
+          mouseMove = requestAnimationFrame(mouseMoveEvent);
+        }
+      }
+  </script>
+  <style>
+    .btn {
+      display: inline-block;
+      height: 30px;
+      width: 120px;
+      text-align: center;
+      margin-left: 30px;
+      cursor: pointer;
+      border: 1px solid #57695c;
+    }
+    .btn:first-child {
+      margin-left: 0;
+    }
+    #stopBtn {
+      background-color: #fcc2c2;
+    }
+    #playBtn {
+      background-color: #97e5e8;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+  <div>
+    <div id="stopBtn" class="btn">停止</div>
+    <div id="playBtn" class="btn">再生</div>
+    <div id="startMouseBtn" class="btn">カメラ移動</div>
+    <div id="stopMouseBtn" class="btn">カメラ停止</div>
+    <div id="opacity" class="btn">透過切替</div>
+  </div>
+</body>
+</html>

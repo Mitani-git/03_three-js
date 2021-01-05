@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/105/three.min.js"></script>
+  <script src="../js/cannon.js"></script>
+  <script>
+    // ページの読み込みを待つ
+    window.addEventListener('load', init);
+
+    function init() {
+      // ここからcannon.js
+      var world = new CANNON.World();
+      world.gravity.set(0, -10, 0);   //重力を設定
+      world.broadphase = new CANNON.NaiveBroadphase();    //ぶつかっている可能性のあるオブジェクト同士を見つける
+
+      world.solver.iterations = 8;        //反復計算回数
+      world.solver.tolerance = 0.1;   
+
+      // cannon.jsで箱作成
+      const boxMass = 1;                                                 // 箱の質量
+      const boxShape = new CANNON.Box(new CANNON.Vec3(5, 5, 5));         // 箱の形状
+      const phyBox = new CANNON.Body({mass: boxMass, shape: boxShape});  // 箱作成
+      phyBox.position.set(0, 500, 0);                                     // 箱の位置
+      phyBox.angularVelocity.set(0.1, 0.1, 0.1);                         // 角速度
+      phyBox.angularDamping = 0.1;                                       // 減衰率
+      world.addBody(phyBox);                                             // ワールドに箱追加
+
+      // cannon.jsで床作成
+      const planeMass = 0;                                               // 質量を0にすると衝突しても動かない                                                           
+      const planeShape = new CANNON.Plane();
+      const phyPlane = new CANNON.Body({mass: planeMass, shape: planeShape});
+      phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);  // X軸に90度回転  
+      phyPlane.position.set(0, 0, 0);
+      world.addBody(phyPlane);
+      world.step(1 / 60);
+
+      // ここからthree.js
+      // サイズを指定
+      const width = 960;
+      const height = 540;
+
+      // レンダラーを作成
+      const renderer = new THREE.WebGLRenderer({
+        canvas: document.querySelector('#myCanvas')
+      });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+
+      // シーンを作成
+      const scene = new THREE.Scene();
+
+      // カメラを作成
+      const camera = new THREE.PerspectiveCamera(45, width / height);
+      camera.position.set(0, 0, +1000);
+
+      // 環境光源を作成
+      // new THREE.AmbientLight(色, 光の強さ)
+      const light = new THREE.AmbientLight(0xFFFFFF, 1.0);
+      scene.add(light);
+
+      // three.jsで箱と床作成
+      // 箱
+      const boxGeometry = new THREE.BoxGeometry(100, 100, 100);
+      const boxMaterial = new THREE.MeshPhongMaterial({color: 0xffffff});
+      const box = new THREE.Mesh(boxGeometry, boxMaterial);
+      scene.add(box);
+
+      // 床
+      const planeGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);
+      const planeMaterial = new THREE.MeshPhongMaterial({color: 0xdddddd});
+      const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      scene.add(plane);
+
+      // レンダリング
+      render();
+      function render() {
+        requestAnimationFrame(render);
+        // ワールドの時間を進める
+        world.step(1 / 60);
+        // cannon.jsからthree.jsにオブジェクトの位置をコピー
+        box.position.copy(phyBox.position);
+        box.quaternion.copy(phyBox.quaternion);
+        plane.position.copy(phyPlane.position);
+        plane.quaternion.copy(phyPlane.quaternion);
+
+        renderer.render(scene, camera);
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+</body>
+</html>

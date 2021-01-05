@@ -30,7 +30,7 @@
       const planeMass = 0;                                               // 質量を0にすると衝突しても動かない                                                           
       const planeShape = new CANNON.Plane();
       const phyPlane = new CANNON.Body({mass: planeMass, shape: planeShape});
-      phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);  // X軸に90度回転  
+      phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 3);  // X軸に90度回転  
       phyPlane.position.set(0, 0, 0);
       world.addBody(phyPlane);
 
@@ -51,13 +51,19 @@
 
       // カメラを作成
       const camera = new THREE.PerspectiveCamera(45, width / height);
-      camera.position.set(50, 50, 50);
+      camera.position.set(50, 0, 50);
       camera.lookAt(new THREE.Vector3(0, 0, 0));
 
       // 環境光源を作成
       // new THREE.AmbientLight(色, 光の強さ)
-      const light = new THREE.AmbientLight(0xFFFFFF, 1.0);
-      scene.add(light);
+      // const light = new THREE.AmbientLight(0xFFFFFF, 1.0);
+      // scene.add(light);
+
+      // スポットライト光源を作成
+      // new THREE.SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
+      const spotlight = new THREE.SpotLight(0xFFFFFF, 3, 100, 1, 0.1, 2);
+      spotlight.position.set( 15, 40, 35 );
+      scene.add(spotlight);
 
       // three.jsで箱と床作成
       // 箱

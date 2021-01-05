@@ -21,7 +21,7 @@
       const boxMass = 1;                                                 // 箱の質量
       const boxShape = new CANNON.Box(new CANNON.Vec3(5, 5, 5));         // 箱の形状
       const phyBox = new CANNON.Body({mass: boxMass, shape: boxShape});  // 箱作成
-      phyBox.position.set(0, 500, 0);                                     // 箱の位置
+      phyBox.position.set(0, 30, 0);                                     // 箱の位置
       phyBox.angularVelocity.set(0.1, 0.1, 0.1);                         // 角速度
       phyBox.angularDamping = 0.1;                                       // 減衰率
       world.addBody(phyBox);                                             // ワールドに箱追加
@@ -33,7 +33,6 @@
       phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);  // X軸に90度回転  
       phyPlane.position.set(0, 0, 0);
       world.addBody(phyPlane);
-      world.step(1 / 60);
 
       // ここからthree.js
       // サイズを指定
@@ -52,7 +51,8 @@
 
       // カメラを作成
       const camera = new THREE.PerspectiveCamera(45, width / height);
-      camera.position.set(0, 0, +1000);
+      camera.position.set(50, 50, 50);
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
 
       // 環境光源を作成
       // new THREE.AmbientLight(色, 光の強さ)
@@ -61,13 +61,13 @@
 
       // three.jsで箱と床作成
       // 箱
-      const boxGeometry = new THREE.BoxGeometry(100, 100, 100);
+      const boxGeometry = new THREE.BoxGeometry(10, 10, 10);
       const boxMaterial = new THREE.MeshPhongMaterial({color: 0xffffff});
       const box = new THREE.Mesh(boxGeometry, boxMaterial);
       scene.add(box);
 
       // 床
-      const planeGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);
+      const planeGeometry = new THREE.PlaneGeometry(100, 100, 1, 1);
       const planeMaterial = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane = new THREE.Mesh(planeGeometry, planeMaterial);
       scene.add(plane);

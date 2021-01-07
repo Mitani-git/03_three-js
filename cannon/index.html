@@ -61,6 +61,7 @@
       });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(width, height);
+      renderer.shadowMap.enabled = true;
 
       // シーンを作成
       const scene = new THREE.Scene();
@@ -79,6 +80,7 @@
       // new THREE.SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
       const spotlight = new THREE.SpotLight(0xFFFFFF, 1, 100, 1, 0.1, 2);
       spotlight.position.set( 1.5, 4., 3.5 );
+      spotlight.castShadow = true;
       scene.add(spotlight);
 
       // three.jsで箱と床作成
@@ -86,24 +88,28 @@
       const sphereGeometry = new THREE.SphereGeometry(0.5, 10, 10);
       const sphereMaterial = new THREE.MeshPhongMaterial({color: 0xff0000});
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      sphere.castShadow = true;
       scene.add(sphere);
 
       // 床
       const planeGeometry = new THREE.PlaneGeometry(10, 10, 1, 1);
       const planeMaterial = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      plane.receiveShadow = true;
       scene.add(plane);
 
       // 床2
       const plane2Geometry = new THREE.PlaneGeometry(10, 10, 1, 1);
       const plane2Material = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane2 = new THREE.Mesh(plane2Geometry, plane2Material);
+      plane2.receiveShadow = true;
       scene.add(plane2);
 
       // 床3
       const plane3Geometry = new THREE.PlaneGeometry(10, 10, 1, 1);
       const plane3Material = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane3 = new THREE.Mesh(plane3Geometry, plane3Material);
+      plane3.receiveShadow = true;
       scene.add(plane3);
 
       // レンダリング

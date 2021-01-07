@@ -17,14 +17,14 @@
       world.solver.iterations = 8;        //反復計算回数
       world.solver.tolerance = 0.1;   
 
-      // cannon.jsで箱作成
-      const boxMass = 1;                                                 // 箱の質量
-      const boxShape = new CANNON.Box(new CANNON.Vec3(5, 5, 5));         // 箱の形状
-      const phyBox = new CANNON.Body({mass: boxMass, shape: boxShape});  // 箱作成
-      phyBox.position.set(0, 30, 0);                                     // 箱の位置
-      phyBox.angularVelocity.set(0.1, 0.1, 0.1);                         // 角速度
-      phyBox.angularDamping = 0.1;                                       // 減衰率
-      world.addBody(phyBox);                                             // ワールドに箱追加
+      // cannon.jsで球作成
+      const sphereMass = 1;                                                 // 球の質量
+      const sphereShape = new CANNON.Sphere(0.5);         // 球の形状
+      const phySphere = new CANNON.Body({mass: sphereMass, shape: sphereShape});  // 球作成
+      phySphere.position.set(0, 3, 0);                                     // 球の位置
+      phySphere.angularVelocity.set(0.1, 0.1, 0.1);                         // 角速度
+      phySphere.angularDamping = 0.1;                                       // 減衰率
+      world.addBody(phySphere);                                             // ワールドに追加
 
       // cannon.jsで床作成
       const planeMass = 0;                                               // 質量を0にすると衝突しても動かない                                                           
@@ -39,7 +39,7 @@
       const plane2Shape = new CANNON.Plane();
       const phy2Plane = new CANNON.Body({mass: plane2Mass, shape: plane2Shape});
       phy2Plane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);  // X軸に90度回転  
-      phy2Plane.position.set(0, -25, 50);
+      phy2Plane.position.set(0, -2.5, 5);
       world.addBody(phy2Plane);
 
       // ここからthree.js
@@ -59,7 +59,7 @@
 
       // カメラを作成
       const camera = new THREE.PerspectiveCamera(45, width / height);
-      camera.position.set(100, 0, 100);
+      camera.position.set(30, 0, 10);
       camera.lookAt(new THREE.Vector3(0, 0, 0));
 
       // 環境光源を作成
@@ -69,25 +69,25 @@
 
       // スポットライト光源を作成
       // new THREE.SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
-      const spotlight = new THREE.SpotLight(0xFFFFFF, 3, 100, 1, 0.1, 2);
-      spotlight.position.set( 15, 40, 35 );
+      const spotlight = new THREE.SpotLight(0xFFFFFF, 1, 100, 1, 0.1, 2);
+      spotlight.position.set( 1.5, 4., 3.5 );
       scene.add(spotlight);
 
       // three.jsで箱と床作成
-      // 箱
-      const boxGeometry = new THREE.BoxGeometry(10, 10, 10);
-      const boxMaterial = new THREE.MeshPhongMaterial({color: 0xffffff});
-      const box = new THREE.Mesh(boxGeometry, boxMaterial);
-      scene.add(box);
+      // 球
+      const sphereGeometry = new THREE.SphereGeometry(0.5, 10, 10);
+      const sphereMaterial = new THREE.MeshPhongMaterial({color: 0xff0000});
+      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      scene.add(sphere);
 
       // 床
-      const planeGeometry = new THREE.PlaneGeometry(100, 100, 1, 1);
+      const planeGeometry = new THREE.PlaneGeometry(10, 10, 1, 1);
       const planeMaterial = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane = new THREE.Mesh(planeGeometry, planeMaterial);
       scene.add(plane);
 
       // 床2
-      const plane2Geometry = new THREE.PlaneGeometry(100, 100, 1, 1);
+      const plane2Geometry = new THREE.PlaneGeometry(10, 10, 1, 1);
       const plane2Material = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane2 = new THREE.Mesh(plane2Geometry, plane2Material);
       scene.add(plane2);
@@ -99,8 +99,8 @@
         // ワールドの時間を進める
         world.step(1 / 60);
         // cannon.jsからthree.jsにオブジェクトの位置をコピー
-        box.position.copy(phyBox.position);
-        box.quaternion.copy(phyBox.quaternion);
+        sphere.position.copy(phySphere.position);
+        sphere.quaternion.copy(phySphere.quaternion);
         plane.position.copy(phyPlane.position);
         plane.quaternion.copy(phyPlane.quaternion);
         plane2.position.copy(phy2Plane.position);

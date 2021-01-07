@@ -34,6 +34,14 @@
       phyPlane.position.set(0, 0, 0);
       world.addBody(phyPlane);
 
+      // cannon.jsで床2作成
+      const plane2Mass = 0;                                         
+      const plane2Shape = new CANNON.Plane();
+      const phy2Plane = new CANNON.Body({mass: plane2Mass, shape: plane2Shape});
+      phy2Plane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);  // X軸に90度回転  
+      phy2Plane.position.set(0, -25, 50);
+      world.addBody(phy2Plane);
+
       // ここからthree.js
       // サイズを指定
       const width = 960;
@@ -51,7 +59,7 @@
 
       // カメラを作成
       const camera = new THREE.PerspectiveCamera(45, width / height);
-      camera.position.set(50, 0, 50);
+      camera.position.set(100, 0, 100);
       camera.lookAt(new THREE.Vector3(0, 0, 0));
 
       // 環境光源を作成
@@ -78,6 +86,12 @@
       const plane = new THREE.Mesh(planeGeometry, planeMaterial);
       scene.add(plane);
 
+      // 床2
+      const plane2Geometry = new THREE.PlaneGeometry(100, 100, 1, 1);
+      const plane2Material = new THREE.MeshPhongMaterial({color: 0xdddddd});
+      const plane2 = new THREE.Mesh(plane2Geometry, plane2Material);
+      scene.add(plane2);
+
       // レンダリング
       render();
       function render() {
@@ -89,6 +103,8 @@
         box.quaternion.copy(phyBox.quaternion);
         plane.position.copy(phyPlane.position);
         plane.quaternion.copy(phyPlane.quaternion);
+        plane2.position.copy(phy2Plane.position);
+        plane2.quaternion.copy(phy2Plane.quaternion);
 
         renderer.render(scene, camera);
       }

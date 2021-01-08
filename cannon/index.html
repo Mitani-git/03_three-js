@@ -49,10 +49,25 @@
       // boxPlane.position.set(0, -1, 6);
       // world.addBody(boxPlane);
 
+      let j = 1;
       let pinArray = []
       for(let i = 0; i < 10; i++){
+        let sumj = 0;
+        for(let k = 1; k <= j; k++){
+          sumj = sumj + k
+        }
+        if( i + 1 > sumj){
+          j = j + 1
+          sumj = sumj + j
+        }
+        let pinPosition = (j - 1) * -0.5 - ((i+1) - sumj);
+        console.log(i)
+        console.log(j)
+        console.log(sumj)
+        console.log(pinPosition)
+        console.log('*****')
         pinArray[i] = new CANNON.Body({mass: boxMass, shape: boxShape});
-        pinArray[i].position.set(0, -1, 6 + i);
+        pinArray[i].position.set(pinPosition, -1, 6 + j);
         world.addBody(pinArray[i]);
       }
 

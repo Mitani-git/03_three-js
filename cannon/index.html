@@ -141,13 +141,16 @@
         pinmodelArray[i].receiveShadow = true;
         scene.add(pinmodelArray[i]);
       }
+      let time = false
 
       // レンダリング
       render();
       function render() {
-        // requestAnimationFrame(render);
-        // // ワールドの時間を進める
-        // world.step(1 / 60);
+        requestAnimationFrame(render);
+        if(time){
+          // ワールドの時間を進める
+          world.step(1 / 60);
+        }
         // cannon.jsからthree.jsにオブジェクトの位置をコピー
         sphere.position.copy(phySphere.position);
         sphere.quaternion.copy(phySphere.quaternion);
@@ -164,10 +167,9 @@
         renderer.render(scene, camera);
       }
       function start() {
-        requestAnimationFrame(start);
-        // ワールドの時間を進める
-        world.step(1 / 60);
-        render()
+        if(!time){
+          time = true
+        }
       }
 
       document.getElementById('btn').addEventListener('click', start)

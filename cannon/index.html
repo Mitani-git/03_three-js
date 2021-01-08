@@ -18,7 +18,7 @@
       world.solver.tolerance = 0.1;   
 
       // cannon.jsで球作成
-      const sphereMass = 1;                                                 // 球の質量
+      const sphereMass = 5;                                                 // 球の質量
       const sphereShape = new CANNON.Sphere(0.5);         // 球の形状
       const phySphere = new CANNON.Body({mass: sphereMass, shape: sphereShape});  // 球作成
       phySphere.position.set(0, 6, -10);                                     // 球の位置
@@ -45,14 +45,15 @@
       // cannon.jsで床3作成
       const boxMass = 0.1;                                         
       const boxShape = new CANNON.Box(new CANNON.Vec3(0.3, 1, 0.3))
-      const boxPlane = new CANNON.Body({mass: boxMass, shape: boxShape});
-      // phy3Plane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0);  // X軸に90度回転  
-      boxPlane.position.set(0, -1, 6);
-      world.addBody(boxPlane);
+      // const boxPlane = new CANNON.Body({mass: boxMass, shape: boxShape});
+      // boxPlane.position.set(0, -1, 6);
+      // world.addBody(boxPlane);
 
-      let j;
+      let pinArray = []
       for(let i = 0; i < 10; i++){
-
+        pinArray[i] = new CANNON.Body({mass: boxMass, shape: boxShape});
+        pinArray[i].position.set(0, -1, 6 + i);
+        world.addBody(pinArray[i]);
       }
 
       // ここからthree.js
@@ -113,9 +114,16 @@
       // ピン
       const boxGeometry = new THREE.BoxGeometry(0.6, 2, 0.6)
       const boxMaterial = new THREE.MeshPhongMaterial({color: 0xdddddd});
-      const box = new THREE.Mesh(boxGeometry, boxMaterial);
-      box.receiveShadow = true;
-      scene.add(box);
+      // const box = new THREE.Mesh(boxGeometry, boxMaterial);
+      // box.receiveShadow = true;
+      // scene.add(box);
+
+      let pinmodelArray = []
+      for(let i = 0; i < 10; i++){
+        pinmodelArray[i] = new THREE.Mesh(boxGeometry, boxMaterial);
+        pinmodelArray[i].receiveShadow = true;
+        scene.add(pinmodelArray[i]);
+      }
 
       // レンダリング
       render();
@@ -130,8 +138,12 @@
         plane.quaternion.copy(phyPlane.quaternion);
         plane2.position.copy(phy2Plane.position);
         plane2.quaternion.copy(phy2Plane.quaternion);
-        box.position.copy(boxPlane.position);
-        box.quaternion.copy(boxPlane.quaternion);
+        // box.position.copy(boxPlane.position);
+        // box.quaternion.copy(boxPlane.quaternion);
+        for(let i = 0; i < 10; i++){
+          pinmodelArray[i].position.copy(pinArray[i].position);
+          pinmodelArray[i].quaternion.copy(pinArray[i].quaternion);
+        }
         renderer.render(scene, camera);
       }
     }

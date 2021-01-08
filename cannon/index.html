@@ -43,11 +43,13 @@
       world.addBody(phy2Plane);
 
       // cannon.jsで床3作成
-      const plane3Mass = 0;                                         
-      const plane3Shape = new CANNON.Plane();
+      const plane3Mass = 0.2;                                         
+      const plane3Shape = new CANNON.Box(new CANNON.Vec3(5, 3, 1))
       const phy3Plane = new CANNON.Body({mass: plane3Mass, shape: plane3Shape});
-      phy3Plane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI * 4 / 3);  // X軸に90度回転  
-      phy3Plane.position.set(0, 0, 9);
+      // phy3Plane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0);  // X軸に90度回転  
+      phy3Plane.position.set(0, 1, 6);
+      phySphere.angularVelocity.set(0.1, 0.1, 0.1);                         // 角速度
+      phySphere.angularDamping = 0.1;   
       world.addBody(phy3Plane);
 
       // ここからthree.js
@@ -68,7 +70,7 @@
 
       // カメラを作成
       const camera = new THREE.PerspectiveCamera(45, width / height);
-      camera.position.set(15, 5, 5);
+      camera.position.set(15, 5, 0);
       camera.lookAt(new THREE.Vector3(0, 0, 0));
 
       // 環境光源を作成
@@ -79,7 +81,7 @@
       // スポットライト光源を作成
       // new THREE.SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
       const spotlight = new THREE.SpotLight(0xFFFFFF, 1, 100, 1, 0.1, 2);
-      spotlight.position.set( 1.5, 4., 3.5 );
+      spotlight.position.set( 3, 8, 7 );
       spotlight.castShadow = true;
       scene.add(spotlight);
 
@@ -99,14 +101,14 @@
       scene.add(plane);
 
       // 床2
-      const plane2Geometry = new THREE.PlaneGeometry(10, 10, 1, 1);
+      const plane2Geometry = new THREE.PlaneGeometry(10, 20, 1, 1);
       const plane2Material = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane2 = new THREE.Mesh(plane2Geometry, plane2Material);
       plane2.receiveShadow = true;
       scene.add(plane2);
 
       // 床3
-      const plane3Geometry = new THREE.PlaneGeometry(10, 10, 1, 1);
+      const plane3Geometry = new THREE.BoxGeometry(10, 6, 2)
       const plane3Material = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane3 = new THREE.Mesh(plane3Geometry, plane3Material);
       plane3.receiveShadow = true;

@@ -18,9 +18,10 @@
       world.solver.tolerance = 0.1;   
 
       // cannon.jsで球作成
-      const sphereMass = 5;                                                 // 球の質量
+      const sphereMass = 10;                                                 // 球の質量
       const sphereShape = new CANNON.Sphere(0.5);         // 球の形状
-      const phySphere = new CANNON.Body({mass: sphereMass, shape: sphereShape});  // 球作成
+      const sphereMate = new CANNON.Material();
+      const phySphere = new CANNON.Body({mass: sphereMass, shape: sphereShape, material: sphereMate});  // 球作成
       phySphere.position.set(0, 6, -10);                                     // 球の位置
       phySphere.angularVelocity.set(0.1, 0.1, 0.1);                         // 角速度
       phySphere.angularDamping = 0.1;                                       // 減衰率
@@ -42,9 +43,10 @@
       phy2Plane.position.set(0, -2.5, 0);
       world.addBody(phy2Plane);
 
-      // cannon.jsで床3作成
+      // cannon.jsでピン作成
       const boxMass = 0.1;                                         
       const boxShape = new CANNON.Box(new CANNON.Vec3(0.3, 1, 0.3))
+      const boxMate = new CANNON.Material();
       // const boxPlane = new CANNON.Body({mass: boxMass, shape: boxShape});
       // boxPlane.position.set(0, -1, 6);
       // world.addBody(boxPlane);
@@ -61,15 +63,15 @@
           sumj = sumj + j
         }
         let pinPosition = (j - 1) * -0.5 - ((i+1) - sumj);
-        console.log(i)
-        console.log(j)
-        console.log(sumj)
-        console.log(pinPosition)
-        console.log('*****')
-        pinArray[i] = new CANNON.Body({mass: boxMass, shape: boxShape});
+        pinArray[i] = new CANNON.Body({mass: boxMass, shape: boxShape, material: boxMate});
         pinArray[i].position.set(pinPosition, -1, 6 + j);
         world.addBody(pinArray[i]);
       }
+
+      // ピンとボールの衝突反応
+      const attack = new CANNON.ContactMaterial(sphereMate, boxMate, { friction: 10.0, restitution: 0.0, frictionEquationRelaxation:0, contactEquationRelaxation:0 });
+      world.addContactMaterial(attack);
+
 
       // ここからthree.js
       // サイズを指定
@@ -89,7 +91,7 @@
 
       // カメラを作成
       const camera = new THREE.PerspectiveCamera(45, width / height);
-      camera.position.set(15, 5, 0);
+      camera.position.set(18,6, 0);
       camera.lookAt(new THREE.Vector3(0, 0, 0));
 
       // 環境光源を作成
@@ -100,7 +102,7 @@
       // スポットライト光源を作成
       // new THREE.SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
       const spotlight = new THREE.SpotLight(0xFFFFFF, 1, 100, 1, 0.1, 2);
-      spotlight.position.set( 3, 8, 7 );
+      spotlight.position.set( 5, 8, 8 );
       spotlight.castShadow = true;
       scene.add(spotlight);
 

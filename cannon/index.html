@@ -43,14 +43,17 @@
       world.addBody(phy2Plane);
 
       // cannon.jsで床3作成
-      const plane3Mass = 0.1;                                         
-      const plane3Shape = new CANNON.Box(new CANNON.Vec3(0.3, 1, 0.3))
-      const phy3Plane = new CANNON.Body({mass: plane3Mass, shape: plane3Shape});
+      const boxMass = 0.1;                                         
+      const boxShape = new CANNON.Box(new CANNON.Vec3(0.3, 1, 0.3))
+      const boxPlane = new CANNON.Body({mass: boxMass, shape: boxShape});
       // phy3Plane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0);  // X軸に90度回転  
-      phy3Plane.position.set(0, -1, 6);
-      phySphere.angularVelocity.set(0.1, 0.1, 0.1);                         // 角速度
-      phySphere.angularDamping = 0.1;   
-      world.addBody(phy3Plane);
+      boxPlane.position.set(0, -1, 6);
+      world.addBody(boxPlane);
+
+      let j;
+      for(let i = 0; i < 10; i++){
+
+      }
 
       // ここからthree.js
       // サイズを指定
@@ -107,12 +110,12 @@
       plane2.receiveShadow = true;
       scene.add(plane2);
 
-      // 床3
-      const plane3Geometry = new THREE.BoxGeometry(0.6, 2, 0.6)
-      const plane3Material = new THREE.MeshPhongMaterial({color: 0xdddddd});
-      const plane3 = new THREE.Mesh(plane3Geometry, plane3Material);
-      plane3.receiveShadow = true;
-      scene.add(plane3);
+      // ピン
+      const boxGeometry = new THREE.BoxGeometry(0.6, 2, 0.6)
+      const boxMaterial = new THREE.MeshPhongMaterial({color: 0xdddddd});
+      const box = new THREE.Mesh(boxGeometry, boxMaterial);
+      box.receiveShadow = true;
+      scene.add(box);
 
       // レンダリング
       render();
@@ -127,8 +130,8 @@
         plane.quaternion.copy(phyPlane.quaternion);
         plane2.position.copy(phy2Plane.position);
         plane2.quaternion.copy(phy2Plane.quaternion);
-        plane3.position.copy(phy3Plane.position);
-        plane3.quaternion.copy(phy3Plane.quaternion);
+        box.position.copy(boxPlane.position);
+        box.quaternion.copy(boxPlane.quaternion);
         renderer.render(scene, camera);
       }
     }

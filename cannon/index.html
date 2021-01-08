@@ -43,11 +43,11 @@
       world.addBody(phy2Plane);
 
       // cannon.jsで床3作成
-      const plane3Mass = 0.2;                                         
-      const plane3Shape = new CANNON.Box(new CANNON.Vec3(5, 3, 1))
+      const plane3Mass = 0.1;                                         
+      const plane3Shape = new CANNON.Box(new CANNON.Vec3(0.3, 1, 0.3))
       const phy3Plane = new CANNON.Body({mass: plane3Mass, shape: plane3Shape});
       // phy3Plane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0);  // X軸に90度回転  
-      phy3Plane.position.set(0, 1, 6);
+      phy3Plane.position.set(0, -1, 6);
       phySphere.angularVelocity.set(0.1, 0.1, 0.1);                         // 角速度
       phySphere.angularDamping = 0.1;   
       world.addBody(phy3Plane);
@@ -108,7 +108,7 @@
       scene.add(plane2);
 
       // 床3
-      const plane3Geometry = new THREE.BoxGeometry(10, 6, 2)
+      const plane3Geometry = new THREE.BoxGeometry(0.6, 2, 0.6)
       const plane3Material = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane3 = new THREE.Mesh(plane3Geometry, plane3Material);
       plane3.receiveShadow = true;

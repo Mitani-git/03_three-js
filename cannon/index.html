@@ -91,7 +91,7 @@
 
       // カメラを作成
       const camera = new THREE.PerspectiveCamera(45, width / height);
-      camera.position.set(18,6, 0);
+      camera.position.set(18 ,8, 5);
       camera.lookAt(new THREE.Vector3(0, 0, 0));
 
       // 環境光源を作成
@@ -138,18 +138,24 @@
       let pinmodelArray = []
       for(let i = 0; i < 10; i++){
         pinmodelArray[i] = new THREE.Mesh(boxGeometry, boxMaterial);
-        pinmodelArray[i].receiveShadow = true;
+        pinmodelArray[i].castShadow = true;
         scene.add(pinmodelArray[i]);
       }
       let time = false
+      let l = 0;
 
       // レンダリング
       render();
-      function render() {
+      function render() { 
         requestAnimationFrame(render);
         if(time){
           // ワールドの時間を進める
           world.step(1 / 60);
+        } else {
+          l += 1;
+          let s = l % 100
+          s = (s - 50) / 10
+          phySphere.position.set(s, 6, -10); 
         }
         // cannon.jsからthree.jsにオブジェクトの位置をコピー
         sphere.position.copy(phySphere.position);

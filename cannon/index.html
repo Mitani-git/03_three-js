@@ -142,7 +142,7 @@
         scene.add(pinmodelArray[i]);
       }
       let time = false
-      let l = 0;
+      let startTime = 0;
 
       // レンダリング
       render();
@@ -152,10 +152,13 @@
           // ワールドの時間を進める
           world.step(1 / 60);
         } else {
-          l += 1;
-          let s = l % 100
-          s = (s - 50) / 10
-          phySphere.position.set(s, 6, -10); 
+          startTime += 1;
+          let startPosNum = startTime % 100
+          if( Math.floor(startTime / 100)%2 === 0 ){
+            startPosNum = 100 - startPosNum
+          }
+          startPosition = (startPosNum - 50) / 10
+          phySphere.position.set(startPosition, 6, -10); 
         }
         // cannon.jsからthree.jsにオブジェクトの位置をコピー
         sphere.position.copy(phySphere.position);

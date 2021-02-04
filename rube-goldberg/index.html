@@ -16,7 +16,7 @@
 			// 場の作成
 			var world = new CANNON.World(); 
 			
-			// 重力を設定。それぞれx（奥→手前）, y（下→上）, z（右→左）軸方向の重力加速度。
+			// 重力を設定。それぞれx（左→右）, y（下→上）, z（奥→手前）軸方向の重力加速度。
 			// 通常は上→下方向に 9.8m/s^2 なので、yに-9.8を設定する
 			// > 物理エンジン使うときはMKS単位系を使用するのが一般的なお作法 （引用元：https://nijibox.jp/blog/hello-threejs-physics/#i-3）
 			// ？これはthree.jsと連動するがゆえだったりするのだろうか
@@ -62,12 +62,69 @@
 				material: sphereMate
 			});
 
-			// 球の初期位置を指定する。それぞれx（奥→手前）, y（下→上）, z（右→左）軸方向
+			// 球の初期位置を指定する。それぞれx（左→右）, y（下→上）, z（奥→手前）軸方向
 			phySphere.position.set(0, 6, -10);
 			
 			// 作成した球をワールドに追加
-      world.addBody(phySphere);
-    }
+			world.addBody(phySphere);
+			
+			// ここからthree.js
+
+			// 【ワールド作成・設定】			
+			// レンダラーを作成
+			const renderer = new THREE.WebGLRenderer({
+        canvas: document.querySelector('#myCanvas') // html上のどのDOM要素に描画するかを設定
+			});
+
+			// 解像度の設定。数値が小さいほど粗く描画される。
+			// window.devicePixelRatio でウィンドウのデバイスピクセル比（Retinaでなければ1）を設定している。
+			renderer.setPixelRatio(window.devicePixelRatio);
+
+			// 表示するキャンバスのサイズを指定。単位は画面上のpx。
+			const width = 960;
+			const height = 540;
+			renderer.setSize(width, height);
+			
+			// 影を表示するかどうかの設定。trueで表示する。
+			renderer.shadowMap.enabled = true;
+			
+			// シーンを作成
+			const scene = new THREE.Scene();
+
+			// カメラを作成
+			// PerspectiveCamera：遠近感を表現できる。
+			// 引数：(視野角, アスペクト比, near, far)
+			// near：Camera frustum near plane = 「見えている」区間でありオブジェクトレンダリングを行う区間の開始距離。デフォルト値は1
+			// far：Camera frustum far plane = 「見えている」区間でありオブジェクトレンダリングを行う区間の開始距離。デフォルトは2000
+			// 参考1：https://threejs.org/docs/#api/en/cameras/PerspectiveCamera
+			// 参考2：https://ics.media/tutorial-three/camera_variation/
+			const camera = new THREE.PerspectiveCamera(45, width / height);
+
+			// カメラの位置を指定する。それぞれx（左→右）, y（下→上）, z（奥→手前）軸方向
+			camera.position.set(18 ,8, 5);
+
+			// カメラが向き固定ではなく一点を見つめるよう設定している
+			// ！この設定でカメラの向きが変わり、カメラ視点に対するxyz軸の向きも変わるので座標指定時に注意！
+			camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			// 環境光源を作成・シーンに追加
+			// AmbientLight：環境光源。全体を一律に明るくする
+			// 引数：(色, 光の強さ)
+			// 参考：https://ics.media/tutorial-three/light_variation/
+			const light = new THREE.AmbientLight(0xffe9d1, 0.5);
+			scene.add(light);
+
+			// スポットライト光源を作成・シーンに追加
+			// SpotLight：スポットライト光源。
+			// 引数：(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
+			// 参考：https://ics.media/tutorial-three/light_variation/
+			const spotlight = new THREE.SpotLight(0xFFFFFF, 1, 100, 1, 0.1, 2);
+			// スポットライトの位置を指定する。それぞれx（左→右）, y（下→上）, z（奥→手前）軸方向
+			spotlight.position.set( 5, 8, 8 );
+			// スポットライトの光で影ができるかを設定する
+			spotlight.castShadow = true;
+			scene.add(spotlight);
+					}
   </script>
 </head>
 <body>

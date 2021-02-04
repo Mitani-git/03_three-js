@@ -124,7 +124,28 @@
 			// スポットライトの光で影ができるかを設定する
 			spotlight.castShadow = true;
 			scene.add(spotlight);
-					}
+
+			// three.jsで球を作成
+			// SphereGeometry：球のジオメトリ（形状）
+			// 引数：(半径, 水平方向のセグメント数, 垂直方向のセグメント数, 水平方向のstart, 水平方向のlength, 垂直方向のstart, 垂直方向のlength)
+			// > セグメントというパラメーターは大雑把にいうとポリゴンの細分化の分割数となります。
+			// > たとえばセグメントを増やすと、球体（SphereGeometry）ではより滑らかになります。
+			// 引用元：https://ics.media/tutorial-three/geometry_general/
+			// ？ここからちょっと理解できてない
+			// ？start：（スイープの？）開始アングル
+			// ？length：スイープの角度の大きさ
+			// ？ここまでちょっと理解できてない
+			// 参考：https://threejs.org/docs/#api/en/geometries/SphereGeometry
+			const sphereGeometry = new THREE.SphereGeometry(0.5, 10, 10);
+
+			// 球のマテリアル（素材、質感）を定義
+      const sphereMaterial = new THREE.MeshPhongMaterial({
+				color: 0xff0000
+			});
+      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      sphere.castShadow = true;
+      scene.add(sphere);
+		}
   </script>
 </head>
 <body>

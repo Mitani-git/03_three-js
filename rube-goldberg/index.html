@@ -63,12 +63,12 @@
 			});
 
 			// 球の初期位置を指定する。それぞれx（左→右）, y（下→上）, z（奥→手前）軸方向
-			phySphere.position.set(0, 6, -10);
+			phySphere.position.set(0, 6, -2);
 			
 			// 作成した球をワールドに追加
 			world.addBody(phySphere);
 			
-			// 【板を作成】
+			// 【板を複数作成】
 			// 板の質量[kg]を定義
 			// 板は動かないよう固定する：質量を0にすると動かないようになる
 			const boardMass = 0;
@@ -77,25 +77,32 @@
 			// 引数：x（左→右）, y（下→上）, z（奥→手前）軸方向の幅[m]
 			// 数値はthree.jsで指定する半分のサイズにする必要がある
 			// 参考：https://nijibox.jp/blog/hello-threejs-physics/#_meshsizebodysize2
-			const boardShape = new CANNON.Box(new CANNON.Vec3(2.5, 5, 0.5))
+			const boardShape = new CANNON.Box(new CANNON.Vec3(2.5, 8, 0.5))
 			
 			// 板用のマテリアルを定義
 			const boardMate = new CANNON.Material();
 			
-			// 上記の定義を用いて板を作成、位置を指定
-      const phyBoard = new CANNON.Body({
-				mass: boardMass,
-				shape: boardShape,
-				material: boardMate
-			});
-			phyBoard.position.set(0, 1, -8);
+			const phyBoardList = []
+			for(let i = 0; i < 4; i++){
+				// 上記の定義を用いて板を作成、位置を指定
+				phyBoardList.push(new CANNON.Body({
+					mass: boardMass,
+					shape: boardShape,
+					material: boardMate
+				}));
+				let isOdd = -1;
+				if(i % 2 === 1){
+					isOdd = 1
+				}
+				phyBoardList[i].position.set(0, 5-i*5, 5*isOdd);
 
-			// 板を傾ける
-			// 引数：傾ける向き（xyz）、角度[rad]
-			phyBoard.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 4); 
-			
-			// 作成した板をワールドに追加
-			world.addBody(phyBoard);
+				// 板を傾ける
+				// 引数：傾ける向き（xyz）、角度[rad]
+				phyBoardList[i].quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), isOdd*Math.PI*3 / 8); 
+				
+				// 作成した板をワールドに追加
+				world.addBody(phyBoardList[i]);
+			}
 
 			// ここからthree.js
 
@@ -130,7 +137,7 @@
 			const camera = new THREE.PerspectiveCamera(45, width / height);
 
 			// カメラの位置を指定する。それぞれx（左→右）, y（下→上）, z（奥→手前）軸方向
-			camera.position.set(18 ,8, 5);
+			camera.position.set(25, 5, 0);
 
 			// カメラが向き固定ではなく一点を見つめるよう設定している
 			// ！この設定でカメラの向きが変わり、カメラ視点に対するxyz軸の向きも変わるので座標指定時に注意！
@@ -180,21 +187,24 @@
 			scene.add(sphere);
 			
 
-			// 【three.jsで板を作成】
+			// 【three.jsで板を複数作成】
 			// BoxGeometry：直方体のジオメトリ（形状）
 			// 引数：(x方向幅, y方向高さ, z方向奥行き, x方向のセグメント数, y方向のセグメント数, z方向のセグメント数)
 			// 参考：https://threejs.org/docs/#api/en/geometries/BoxGeometry
-			const boardGeometry = new THREE.BoxGeometry(5, 10, 1);
+			const boardGeometry = new THREE.BoxGeometry(5, 16, 1);
 
 			// 板のマテリアル（素材、質感）を定義
-      const boardMaterial = new THREE.MeshPhongMaterial({
+			const boardMaterial = new THREE.MeshPhongMaterial({
 				color: 0xdddddd
 			});
 
-			// 定義したジオメトリ（形状）とマテリアル（質感）で板を作成
-			const board = new THREE.Mesh(boardGeometry, boardMaterial);
-			// 板をシーンに追加
-			scene.add(board);
+			const boardList = []
+			for(let i = 0; i < 4; i++){
+				// 定義したジオメトリ（形状）とマテリアル（質感）で板を作成
+				boardList.push(new THREE.Mesh(boardGeometry, boardMaterial));
+				// 板をシーンに追加
+				scene.add(boardList[i]);
+			}
 
 
 			// レンダリング用の関数定義
@@ -206,8 +216,10 @@
         sphere.position.copy(phySphere.position);
 				sphere.quaternion.copy(phySphere.quaternion);
 				// cannon.jsからthree.jsに板の情報をコピー
-				board.position.copy(phyBoard.position);
-				board.quaternion.copy(phyBoard.quaternion);
+				boardList.forEach((item, index)=>{
+					item.position.copy(phyBoardList[index].position);
+					item.quaternion.copy(phyBoardList[index].quaternion);
+				});
 				
 				// シーン・カメラのレンダリング
 				renderer.render(scene, camera);

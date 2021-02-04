@@ -144,7 +144,26 @@
 			});
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
       sphere.castShadow = true;
-      scene.add(sphere);
+			scene.add(sphere);
+			
+			// レンダリング用の関数定義
+      function render() { 
+				// ワールドの時間を1コマ進める
+				world.step(1 / 60);
+
+        // cannon.jsからthree.jsに球の情報をコピー
+        sphere.position.copy(phySphere.position);
+				sphere.quaternion.copy(phySphere.quaternion);
+				
+				// シーン・カメラのレンダリング
+				renderer.render(scene, camera);
+
+				// 再度render関数を呼び出す（次の1コマ）
+				requestAnimationFrame(render);
+			}
+			
+			// レンダリング関数の開始
+			render();
 		}
   </script>
 </head>

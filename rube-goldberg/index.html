@@ -11,10 +11,14 @@
 
     function init() {
 			// ここからcannon.js
-			var world = new CANNON.World(); // 場の追加
 
+			// 【ワールド作成・設定】
+			// 場の作成
+			var world = new CANNON.World(); 
+			
 			// 重力を設定。それぞれx（奥→手前）, y（下→上）, z（右→左）軸方向の重力加速度。
 			// 通常は上→下方向に 9.8m/s^2 なので、yに-9.8を設定する
+			// > 物理エンジン使うときはMKS単位系を使用するのが一般的なお作法 （引用元：https://nijibox.jp/blog/hello-threejs-physics/#i-3）
 			// ？これはthree.jsと連動するがゆえだったりするのだろうか
 			world.gravity.set(0, -9.8, 0);
 
@@ -36,7 +40,33 @@
 			// > これも不正確さに関する設定ですが、ある程度の誤差を許容することで不安定さを解消する役割があります。
 			// > この許容値をどれくらいにするか、という設定です。
 			// 引用元：http://css-eblog.com/webgl/cannonjs.html
-      world.solver.tolerance = 0.1;  
+			world.solver.tolerance = 0.1; 
+			
+			// 【球を作成】
+			// 球の質量[kg]を定義
+			const sphereMass = 1;
+			// 球の形状を定義
+			// 数値は半径[m] のはずだがthree.jsで指定する球の半径の半分のサイズにする必要がある
+			// 参考：https://nijibox.jp/blog/hello-threejs-physics/#_meshsizebodysize2
+			const sphereShape = new CANNON.Sphere(0.5);
+			
+			// 球用のマテリアルを定義
+			// 他の物体とぶつかった際の反応などを定義するためのもの（だと思う）
+			// ぶつかった際の反応自体の定義は後々
+			const sphereMate = new CANNON.Material();
+			
+			// 上記の定義を用いて球を作成する
+      const phySphere = new CANNON.Body({
+				mass: sphereMass,
+				shape: sphereShape,
+				material: sphereMate
+			});
+
+			// 球の初期位置を指定する。それぞれx（奥→手前）, y（下→上）, z（右→左）軸方向
+			phySphere.position.set(0, 6, -10);
+			
+			// 作成した球をワールドに追加
+      world.addBody(phySphere);
     }
   </script>
 </head>

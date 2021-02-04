@@ -28,8 +28,8 @@
       world.addBody(phySphere);                                             // ワールドに追加
 
       // cannon.jsで床作成
-      const planeMass = 0;                                               // 質量を0にすると衝突しても動かない                                                           
-      const planeShape = new CANNON.Plane();
+      const planeMass = 0;                                               // 質量を0にすると衝突しても動かない
+      const planeShape = new CANNON.Box(new CANNON.Vec3(2.5, 5, 0.5))
       const phyPlane = new CANNON.Body({mass: planeMass, shape: planeShape});
       phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 4);  // X軸に90度回転  
       phyPlane.position.set(0, 1, -8);
@@ -115,7 +115,7 @@
       scene.add(sphere);
 
       // 床
-      const planeGeometry = new THREE.PlaneGeometry(10, 10, 1, 1);
+      const planeGeometry = new THREE.BoxGeometry(5, 10, 1);
       const planeMaterial = new THREE.MeshPhongMaterial({color: 0xdddddd});
       const plane = new THREE.Mesh(planeGeometry, planeMaterial);
       plane.receiveShadow = true;

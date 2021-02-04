@@ -68,6 +68,35 @@
 			// 作成した球をワールドに追加
 			world.addBody(phySphere);
 			
+			// 【板を作成】
+			// 板の質量[kg]を定義
+			// 板は動かないよう固定する：質量を0にすると動かないようになる
+			const boardMass = 0;
+
+			// 板の形状を定義
+			// 引数：x（左→右）, y（下→上）, z（奥→手前）軸方向の幅[m]
+			// 数値はthree.jsで指定する半分のサイズにする必要がある
+			// 参考：https://nijibox.jp/blog/hello-threejs-physics/#_meshsizebodysize2
+			const boardShape = new CANNON.Box(new CANNON.Vec3(2.5, 5, 0.5))
+			
+			// 板用のマテリアルを定義
+			const boardMate = new CANNON.Material();
+			
+			// 上記の定義を用いて板を作成、位置を指定
+      const phyBoard = new CANNON.Body({
+				mass: boardMass,
+				shape: boardShape,
+				material: boardMate
+			});
+			phyBoard.position.set(0, 1, -8);
+
+			// 板を傾ける
+			// 引数：傾ける向き（xyz）、角度[rad]
+			phyBoard.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 4); 
+			
+			// 作成した板をワールドに追加
+			world.addBody(phyBoard);
+
 			// ここからthree.js
 
 			// 【ワールド作成・設定】			
@@ -125,7 +154,7 @@
 			spotlight.castShadow = true;
 			scene.add(spotlight);
 
-			// three.jsで球を作成
+			// 【three.jsで球を作成】
 			// SphereGeometry：球のジオメトリ（形状）
 			// 引数：(半径, 水平方向のセグメント数, 垂直方向のセグメント数, 水平方向のstart, 水平方向のlength, 垂直方向のstart, 垂直方向のlength)
 			// > セグメントというパラメーターは大雑把にいうとポリゴンの細分化の分割数となります。
@@ -142,10 +171,32 @@
       const sphereMaterial = new THREE.MeshPhongMaterial({
 				color: 0xff0000
 			});
-      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-      sphere.castShadow = true;
+
+			// 定義したジオメトリ（形状）とマテリアル（質感）で球を作成
+			const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+			// 影を落とすかどうかの設定
+			sphere.castShadow = true;
+			// 球をシーンに追加
 			scene.add(sphere);
 			
+
+			// 【three.jsで板を作成】
+			// BoxGeometry：直方体のジオメトリ（形状）
+			// 引数：(x方向幅, y方向高さ, z方向奥行き, x方向のセグメント数, y方向のセグメント数, z方向のセグメント数)
+			// 参考：https://threejs.org/docs/#api/en/geometries/BoxGeometry
+			const boardGeometry = new THREE.BoxGeometry(5, 10, 1);
+
+			// 板のマテリアル（素材、質感）を定義
+      const boardMaterial = new THREE.MeshPhongMaterial({
+				color: 0xdddddd
+			});
+
+			// 定義したジオメトリ（形状）とマテリアル（質感）で板を作成
+			const board = new THREE.Mesh(boardGeometry, boardMaterial);
+			// 板をシーンに追加
+			scene.add(board);
+
+
 			// レンダリング用の関数定義
       function render() { 
 				// ワールドの時間を1コマ進める
@@ -154,6 +205,9 @@
         // cannon.jsからthree.jsに球の情報をコピー
         sphere.position.copy(phySphere.position);
 				sphere.quaternion.copy(phySphere.quaternion);
+				// cannon.jsからthree.jsに板の情報をコピー
+				board.position.copy(phyBoard.position);
+				board.quaternion.copy(phyBoard.quaternion);
 				
 				// シーン・カメラのレンダリング
 				renderer.render(scene, camera);

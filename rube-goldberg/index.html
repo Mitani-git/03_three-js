@@ -41,7 +41,7 @@
 			// > この許容値をどれくらいにするか、という設定です。
 			// 引用元：http://css-eblog.com/webgl/cannonjs.html
 			world.solver.tolerance = 0.1; 
-			
+
 			// 【球を作成】
 			// 球の質量[kg]を定義
 			const sphereMass = 1;
@@ -105,6 +105,24 @@
 				// 作成した板をワールドに追加
 				world.addBody(phyBoardList[i]);
 			}
+
+			// 【床を作成】
+			// 端がなく無限に続く・衝突などで動かない床を作成
+			// 質量を0にすると動かないようになる
+			const planeMass = 0;      
+			// 床の形状を定義…Plane：は無限に続く平面
+			// 参考：https://w.atwiki.jp/threejs/pages/85.html
+			const planeShape = new CANNON.Plane();
+			// 上記の定義を用いて床を作成する
+      const phyPlane = new CANNON.Body({
+				mass: planeMass,
+				shape: planeShape
+			});
+      phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);  // x軸に90度回転  
+			phyPlane.position.set(0, -30, 0);
+			// 作成した床をワールドに追加
+			world.addBody(phyPlane);
+			
 
 			// ここからthree.js
 
@@ -208,6 +226,17 @@
 				scene.add(boardList[i]);
 			}
 
+			// 【three.jsで床を作成】
+			const planeGeometry = new THREE.BoxGeometry(100, 100, 0.01);
+      const planeMaterial = new THREE.MeshPhongMaterial({
+				color: 0xdddddd
+			});
+			const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+			// 床に影を落とすかの設定
+			plane.receiveShadow = true;
+			// 床をシーンに追加
+      scene.add(plane);
+
 
 			// レンダリング用の関数定義
       function render() { 
@@ -222,10 +251,13 @@
 					item.position.copy(phyBoardList[index].position);
 					item.quaternion.copy(phyBoardList[index].quaternion);
 				});
+				// cannon.jsからthree.jsに床の情報をコピー
+				plane.position.copy(phyPlane.position);
+				plane.quaternion.copy(phyPlane.quaternion);
 
 				// 球の動きに合わせてカメラの位置・視点を変更
 				camera.position.set(25, phySphere.position.y, 0);
-				camera.lookAt(new THREE.Vector3(0, phySphere.position.y, phySphere.position.z));
+				camera.lookAt(new THREE.Vector3(phySphere.position.y, phySphere.position.y, phySphere.position.z));
 
 				// シーン・カメラのレンダリング
 				renderer.render(scene, camera);

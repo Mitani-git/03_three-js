@@ -222,7 +222,11 @@
 					item.position.copy(phyBoardList[index].position);
 					item.quaternion.copy(phyBoardList[index].quaternion);
 				});
-				
+
+				// 球の動きに合わせてカメラの位置・視点を変更
+				camera.position.set(25, phySphere.position.y, 0);
+				camera.lookAt(new THREE.Vector3(0, phySphere.position.y, phySphere.position.z));
+
 				// シーン・カメラのレンダリング
 				renderer.render(scene, camera);
 

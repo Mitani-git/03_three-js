@@ -42,13 +42,26 @@
 			// 引用元：http://css-eblog.com/webgl/cannonjs.html
 			world.solver.tolerance = 0.1; 
 
+			// 各オブジェクトのサイズを変数で定義
+			const sphereRadius = 0.5 // 球の半径
+			const boardSize = { // 板の大きさ
+				x: 5,
+				y: 16,
+				z: 1
+			}
+			const planeSize = { // 床の大きさ
+				x: 100,
+				y: 100,
+				z: 0.1
+			}
+
 			// 【球を作成】
 			// 球の質量[kg]を定義
 			const sphereMass = 1;
 			// 球の形状を定義
-			// 数値は半径[m] のはずだがthree.jsで指定する球の半径の半分のサイズにする必要がある
+			// 数値は半径[m]  three.jsと同じ数値で良い
 			// 参考：https://nijibox.jp/blog/hello-threejs-physics/#_meshsizebodysize2
-			const sphereShape = new CANNON.Sphere(0.5);
+			const sphereShape = new CANNON.Sphere(sphereRadius);
 			
 			// 球用のマテリアルを定義
 			// 他の物体とぶつかった際の反応などを定義するためのもの（だと思う）
@@ -77,7 +90,7 @@
 			// 引数：x（左→右）, y（下→上）, z（奥→手前）軸方向の幅[m]
 			// 数値はthree.jsで指定する半分のサイズにする必要がある
 			// 参考：https://nijibox.jp/blog/hello-threejs-physics/#_meshsizebodysize2
-			const boardShape = new CANNON.Box(new CANNON.Vec3(2.5, 8, 0.5))
+			const boardShape = new CANNON.Box(new CANNON.Vec3(boardSize.x / 2, boardSize.y / 2, boardSize.z / 2))
 			
 			// 板用のマテリアルを定義
 			const boardMate = new CANNON.Material();
@@ -192,7 +205,7 @@
 			// ？length：スイープの角度の大きさ
 			// ？ここまでちょっと理解できてない
 			// 参考：https://threejs.org/docs/#api/en/geometries/SphereGeometry
-			const sphereGeometry = new THREE.SphereGeometry(0.5, 10, 10);
+			const sphereGeometry = new THREE.SphereGeometry(sphereRadius, 10, 10);
 
 			// 球のマテリアル（素材、質感）を定義
       const sphereMaterial = new THREE.MeshPhongMaterial({
@@ -211,7 +224,7 @@
 			// BoxGeometry：直方体のジオメトリ（形状）
 			// 引数：(x方向幅, y方向高さ, z方向奥行き, x方向のセグメント数, y方向のセグメント数, z方向のセグメント数)
 			// 参考：https://threejs.org/docs/#api/en/geometries/BoxGeometry
-			const boardGeometry = new THREE.BoxGeometry(5, 16, 1);
+			const boardGeometry = new THREE.BoxGeometry(boardSize.x, boardSize.y, boardSize.z);
 
 			// 板のマテリアル（素材、質感）を定義
 			const boardMaterial = new THREE.MeshPhongMaterial({
@@ -227,7 +240,7 @@
 			}
 
 			// 【three.jsで床を作成】
-			const planeGeometry = new THREE.BoxGeometry(100, 100, 0.01);
+			const planeGeometry = new THREE.BoxGeometry(planeSize.x, planeSize.y, planeSize.z);
       const planeMaterial = new THREE.MeshPhongMaterial({
 				color: 0xdddddd
 			});

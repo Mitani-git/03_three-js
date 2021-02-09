@@ -54,6 +54,11 @@
 				y: 100,
 				z: 0.1
 			}
+			const propSize = {
+				radiusTop: 1,
+				radiusBottom: 1,
+				height: 5
+			}
 
 			// 【球を作成】
 			// 球の質量[kg]を定義
@@ -136,6 +141,25 @@
 			// 作成した床をワールドに追加
 			world.addBody(phyPlane);
 			
+			// 【シーソー配置】
+			// シーソーの支柱を作成する
+			const propMass = 0;
+			// 支柱の形状（円柱）を定義
+			// 引数：（上部半径、下部半径、高さ、セグメント）
+			// 参考：https://schteppe.github.io/cannon.js/docs/classes/Cylinder.html
+			const propShape = new CANNON.Cylinder(propSize.radiusTop, propSize.radiusBottom, propSize.height, 10);
+			// 支柱のマテリアルを定義
+			const propMate = new CANNON.Material();
+			// 上記の定義を用いて作成する
+      const phyProp = new CANNON.Body({
+				mass: propMass,
+				shape: propShape,
+				material: propMate
+			});
+			phyProp.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 1, 0), -Math.PI / 2);  // x軸に90度回転
+			// 初期位置を指定し、ワールドに追加
+			phyProp.position.set(0, -30, -20);
+			world.addBody(phyProp);
 
 			// ここからthree.js
 
@@ -250,6 +274,20 @@
 			// 床をシーンに追加
       scene.add(plane);
 
+			// 【three.jsでシーソーを作成】
+			// CylinderGeometry：円柱のジオメトリ作成
+			// 引数：（上部半径, 下部半径, 高さ, 円周部分のセグメント数, 縦部分のセグメント数, 端が空いているか（デフォルト：false）, thetaStart, thetaLength）
+			// thetaStart：セグメントの開始角度
+			// thetaLength：扇形の中心角
+			// 参考：https://threejs.org/docs/#api/en/geometries/CylinderGeometry
+			const propGeometry = new THREE.CylinderGeometry(propSize.radiusTop, propSize.radiusBottom, propSize.height);
+      const propMaterial = new THREE.MeshPhongMaterial({
+				color: 0xdddddd
+			});
+			const prop = new THREE.Mesh(propGeometry, propMaterial);
+			// シーンに追加
+      scene.add(prop);
+
 
 			// レンダリング用の関数定義
       function render() { 
@@ -267,6 +305,9 @@
 				// cannon.jsからthree.jsに床の情報をコピー
 				plane.position.copy(phyPlane.position);
 				plane.quaternion.copy(phyPlane.quaternion);
+				// cannon.jsからthree.jsにシーソーの情報をコピー
+				prop.position.copy(phyProp.position);
+				prop.quaternion.copy(phyProp.quaternion);
 
 				// 球の動きに合わせてカメラの位置・視点を変更
 				camera.position.set(25, phySphere.position.y, 0);

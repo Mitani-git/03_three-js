@@ -131,7 +131,7 @@
 				mass: planeMass,
 				shape: planeShape
 			});
-      phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);  // x軸に90度回転  
+			phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);  // x軸に90度回転
 			phyPlane.position.set(0, -30, 0);
 			// 作成した床をワールドに追加
 			world.addBody(phyPlane);

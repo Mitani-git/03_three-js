@@ -198,6 +198,14 @@
 			// ドミノ用のマテリアルを定義
 			const dominoMate = new CANNON.Material({ friction: 0.1, }); // 摩擦係数が重要！
 
+			// シーソー→ドミノの伝達を行うための衝突反応設定
+			const dominoSeesawCM = new CANNON.ContactMaterial(
+						boardMate, //ひとつ目のマテリアル
+						dominoMate,   //ふたつ目のマテリアル
+						{ friction: 0, restitution: 0}
+				);
+			world.addContactMaterial(dominoSeesawCM);
+
 			const phyDominoList = []
 			const dominoPosition = {
 				x: 12.5,
@@ -380,12 +388,20 @@
 				color: 0x87cefa
 			});
 
+			const lastDominoGeometry = new THREE.BoxGeometry(
+				dominoSize.x, dominoSize.y * 2, dominoSize.z * 2
+			);
+			const lastDominoMaterial = new THREE.MeshPhongMaterial({
+				color: 0xd14d4d
+			});
+
 			const dominoList = []
 			for(let i = 0; i < dominoNum * dominoLoop; i++){
 				dominoList.push(new THREE.Mesh(dominoGeometry, dominoMaterial));
 				scene.add(dominoList[i]);
 			}
-
+			const lastDomino = new THREE.Mesh(lastDominoGeometry , lastDominoMaterial)
+			scene.add(lastDomino);
 
 			// レンダリング用の関数定義
       function render() { 
@@ -413,6 +429,13 @@
 					item.position.copy(phyDominoList[index].position);
 					item.quaternion.copy(phyDominoList[index].quaternion);
 				});
+				const dominoListLength = dominoNum * dominoLoop
+				lastDomino.position.set(
+					phyDominoList[dominoListLength - 1].position.x + 10,
+					phyDominoList[dominoListLength - 1].position.y + dominoSize.y,
+					phyDominoList[dominoListLength - 1].position.z + dominoSize.z + 10
+				);
+				lastDomino.quaternion.copy(phyDominoList[dominoListLength - 1].quaternion);
 				// 球の動きに合わせてカメラの位置・視点を変更
 				// if(phySphere.position.y > -25){
 				// 	camera.position.set(25, phySphere.position.y, 0);

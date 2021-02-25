@@ -8,7 +8,6 @@
   <script>
     // ページの読み込みを待つ
     window.addEventListener('load', init);
-
     function init() {
 			// ここからcannon.js
 
@@ -54,15 +53,21 @@
 				y: 100,
 				z: 0.1
 			}
-			const propSize = {
+			const propSize = { // シーソー支柱の大きさ
 				radiusTop: 2,
 				radiusBottom: 2,
 				height: 5
 			}
+			const dominoSize = { // ドミノ板の大きさ
+				x: 2,
+				y: 3,
+				z: 0.3
+			}
+			const dominoNum = 30;
 
 			// 【球を作成】
 			// 球の質量[kg]を定義
-			const sphereMass = 1;
+			const sphereMass = 10;
 			// 球の形状を定義
 			// 数値は半径[m]  three.jsと同じ数値で良い
 			// 参考：https://nijibox.jp/blog/hello-threejs-physics/#_meshsizebodysize2
@@ -132,9 +137,11 @@
 			// 参考：https://w.atwiki.jp/threejs/pages/85.html
 			const planeShape = new CANNON.Plane();
 			// 上記の定義を用いて床を作成する
+			const planeMate = new CANNON.Material();
       const phyPlane = new CANNON.Body({
 				mass: planeMass,
-				shape: planeShape
+				shape: planeShape,
+				material: planeMate
 			});
 			phyPlane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);  // x軸に90度回転
 			phyPlane.position.set(0, -30, 0);
@@ -169,9 +176,46 @@
 					material: boardMate
 			});
 			// 初期位置を指定し、ワールドに追加
-			phySeesaw.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 1, 1), -Math.PI / 2);  // x軸に90度回転
-			phySeesaw.position.set(5, -25, -13);
+			phySeesaw.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 1, 1), -Math.PI / 2);
+			phySeesaw.position.set(6, -25, -13);
 			world.addBody(phySeesaw);
+
+
+			// 【ドミノを複数作成】
+			// 質量[kg]を定義
+			const dominoMass = 1;
+			// 形状を定義
+			const dominoShape = new CANNON.Box(
+				new CANNON.Vec3(dominoSize.x / 2, dominoSize.y / 2, dominoSize.z / 2)
+			)
+			// ドミノ用のマテリアルを定義
+			const dominoMate = new CANNON.Material({ friction: 0.1, });
+
+			const phyDominoList = []
+			for(let i = 0; i < dominoNum; i++){
+				// 上記の定義を用いて板を作成、位置を指定
+				phyDominoList.push(new CANNON.Body({
+					mass: dominoMass,
+					shape: dominoShape,
+					material: dominoMate
+				}));
+
+				// 配置設定
+				phyDominoList[i].position.set(14.5 + i*2, -27, -10);
+				phyDominoList[i].quaternion.setFromAxisAngle(
+					new CANNON.Vec3(0, 1, 0), -Math.PI / 2
+				);
+				
+				// ワールドに追加
+				world.addBody(phyDominoList[i]);
+
+				const cubeGroundCM = new CANNON.ContactMaterial(
+						boardMate, //ひとつ目のマテリアル
+						dominoMate,   //ふたつ目のマテリアル
+						{ friction: 0, restitution: 0}
+				);
+				world.addContactMaterial(cubeGroundCM);
+			}
 
 			// ここからthree.js
 
@@ -306,6 +350,21 @@
 			scene.add(seesaw);
 
 
+			// 【three.jsでドミノを複数作成】
+			const dominoGeometry = new THREE.BoxGeometry(
+				dominoSize.x, dominoSize.y, dominoSize.z
+			);
+			const dominoMaterial = new THREE.MeshPhongMaterial({
+				color: 0xdddddd
+			});
+
+			const dominoList = []
+			for(let i = 0; i < dominoNum; i++){
+				dominoList.push(new THREE.Mesh(dominoGeometry, dominoMaterial));
+				scene.add(dominoList[i]);
+			}
+
+
 			// レンダリング用の関数定義
       function render() { 
 				// ワールドの時間を1コマ進める
@@ -327,9 +386,19 @@
 				prop.quaternion.copy(phyProp.quaternion);
 			  seesaw.position.copy(phySeesaw.position);
 				seesaw.quaternion.copy(phySeesaw.quaternion);
+				// cannon.jsからthree.jsにドミノの情報をコピー
+				dominoList.forEach((item, index)=>{
+					item.position.copy(phyDominoList[index].position);
+					item.quaternion.copy(phyDominoList[index].quaternion);
+				});
 				// 球の動きに合わせてカメラの位置・視点を変更
-				camera.position.set(25, phySphere.position.y, 0);
-				camera.lookAt(new THREE.Vector3(phySphere.position.y, phySphere.position.y, phySphere.position.z));
+				// if(phySphere.position.y > -25){
+				// 	camera.position.set(25, phySphere.position.y, 0);
+				// 	camera.lookAt(new THREE.Vector3(phySphere.position.y, phySphere.position.y, phySphere.position.z));
+				// } else {
+					camera.position.set(10, -20, 40);
+					camera.lookAt(new THREE.Vector3(10, -30, 0));
+				// }
 
 				// シーン・カメラのレンダリング
 				renderer.render(scene, camera);

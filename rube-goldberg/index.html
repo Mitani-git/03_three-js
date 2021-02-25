@@ -189,7 +189,7 @@
 				new CANNON.Vec3(dominoSize.x / 2, dominoSize.y / 2, dominoSize.z / 2)
 			)
 			// ドミノ用のマテリアルを定義
-			const dominoMate = new CANNON.Material({ friction: 0.1, });
+			const dominoMate = new CANNON.Material({ friction: 0.1, }); // 摩擦係数が重要！
 
 			const phyDominoList = []
 			for(let i = 0; i < dominoNum; i++){
@@ -208,13 +208,6 @@
 				
 				// ワールドに追加
 				world.addBody(phyDominoList[i]);
-
-				const cubeGroundCM = new CANNON.ContactMaterial(
-						boardMate, //ひとつ目のマテリアル
-						dominoMate,   //ふたつ目のマテリアル
-						{ friction: 0, restitution: 0}
-				);
-				world.addContactMaterial(cubeGroundCM);
 			}
 
 			// ここからthree.js
@@ -270,7 +263,7 @@
 			// 参考：https://ics.media/tutorial-three/light_variation/
 			const spotlight = new THREE.SpotLight(0xFFFFFF, 1, 100, 1, 0.1, 2);
 			// スポットライトの位置を指定する。それぞれx（左→右）, y（下→上）, z（奥→手前）軸方向
-			spotlight.position.set( 5, 8, 8 );
+			spotlight.position.set( 0, 5, 0 );
 			// スポットライトの光で影ができるかを設定する
 			spotlight.castShadow = true;
 			scene.add(spotlight);
@@ -340,13 +333,16 @@
 			const propGeometry = new THREE.CylinderGeometry(propSize.radiusTop, propSize.radiusBottom, propSize.height);
 			propGeometry.rotateX(Math.PI/2);
       const propMaterial = new THREE.MeshPhongMaterial({
-				color: 0xdddddd
+				color: 0xd0af4c
+			});
+			const seesawMaterial = new THREE.MeshPhongMaterial({
+				color: 0xd0af4c
 			});
 			const prop = new THREE.Mesh(propGeometry, propMaterial);
 			// シーンに追加
       scene.add(prop);
 			// シーソーの板部分を作成
-			const seesaw = new THREE.Mesh(boardGeometry, boardMaterial)
+			const seesaw = new THREE.Mesh(boardGeometry, seesawMaterial)
 			scene.add(seesaw);
 
 
@@ -355,7 +351,7 @@
 				dominoSize.x, dominoSize.y, dominoSize.z
 			);
 			const dominoMaterial = new THREE.MeshPhongMaterial({
-				color: 0xdddddd
+				color: 0x87cefa
 			});
 
 			const dominoList = []

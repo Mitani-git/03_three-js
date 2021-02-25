@@ -277,8 +277,7 @@
 			const camera = new THREE.PerspectiveCamera(45, width / height);
 
 			// カメラの位置を指定する。それぞれx（左→右）, y（下→上）, z（奥→手前）軸方向
-			camera.position.set(3, -26, 15);
-			// camera.position.set(25, 5, 0);
+			camera.position.set(25, 5, 0);
 
 			// カメラが向き固定ではなく一点を見つめるよう設定している
 			// ！この設定でカメラの向きが変わり、カメラ視点に対するxyz軸の向きも変わるので座標指定時に注意！
@@ -404,6 +403,7 @@
 			scene.add(lastDomino);
 
 			// レンダリング用の関数定義
+			let time = 0;
       function render() { 
 				// ワールドの時間を1コマ進める
 				world.step(1 / 60);
@@ -437,13 +437,20 @@
 				);
 				lastDomino.quaternion.copy(phyDominoList[dominoListLength - 1].quaternion);
 				// 球の動きに合わせてカメラの位置・視点を変更
-				// if(phySphere.position.y > -25){
-				// 	camera.position.set(25, phySphere.position.y, 0);
-				// 	camera.lookAt(new THREE.Vector3(phySphere.position.y, phySphere.position.y, phySphere.position.z));
-				// } else {
-					camera.position.set(30, -10,60);
-					camera.lookAt(new THREE.Vector3(30, -30, 10));
-				// }
+				if(phySphere.position.y > -10){
+					camera.position.set(phySphere.position.x + 20, phySphere.position.y, 0);
+					camera.lookAt(new THREE.Vector3(phySphere.position.y, phySphere.position.y, phySphere.position.z));
+				} else if(phySphere.position.y > -25) {
+					time += 0.2;
+					camera.position.set(phySphere.position.x + 20 + time, -10, 0);
+					camera.lookAt(new THREE.Vector3(phySphere.position.y, phySphere.position.y, phySphere.position.z));
+				} else {
+					if(time < phyDominoList[dominoListLength - 1].position.z + dominoSize.z + 20){
+						time += 0.02;
+					}
+					camera.position.set(60, -10, -35 + time);
+					camera.lookAt(new THREE.Vector3(0, -30, -30 + time));
+				}
 
 				// シーン・カメラのレンダリング
 				renderer.render(scene, camera);
